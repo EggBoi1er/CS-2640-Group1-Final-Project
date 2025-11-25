@@ -10,7 +10,7 @@ yPos: .word 50
 .text
 main:
     la 	$t0, frameBuffer #Loads the frame buffer address
-    li $t1, 8192 # 512 by 256 pixels
+    li $t1, 2048 # 512 by 256 pixels
     li $t2, 0xFFFFFF #Draws the background to be white
 
 repeatPix:
@@ -18,6 +18,10 @@ repeatPix:
     addi, $t0, $t0, 4 #Next spot to fill in the pixels
     addi, $t1, $t1, -1 #Decrease the number of pixel of needed
     bnez, $t1, repeatPix #Repeat the pixels until there is no pixels left to fill in the background
+
+    la $t0, frameBuffer
+    li $t1, 64
+    li $t2, 0x00000000
 
 drawBorderTop:
 
