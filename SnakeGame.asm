@@ -17,7 +17,7 @@ bg_loop:
     sw $t2, 0(t0)
     addi, $t0, $t0, 4 #Next spot to fill in the pixels
     addi, $t1, $t1, -1 #Decrease the number of pixel of needed
-    bnez, $t1, repeatPix #Repeat the pixels until there is no pixels left to fill in the background
+    bnez, $t1, bg_loop #Repeat the pixels until there is no pixels left to fill in the background
 
     la $t0, bg_loop
     li $t1, 64
