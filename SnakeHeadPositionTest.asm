@@ -16,7 +16,7 @@ main:
 	jal updateSnakeHeadPosition
 	jal updateSnakeHeadPosition
 
-	# end program
+	# exit
 	li $v0, 10
 	syscall
 
