@@ -19,7 +19,7 @@ bg_loop:
     addi, $t1, $t1, -1 #Decrease the number of pixel of needed
     bnez, $t1, bg_loop #Repeat the pixels until there is no pixels left to fill in the background
 
-    la $t0, bg_loop
+    la $t0, frameBuffer
     li $t1, 64
     li $t2, 0x00000000
 
