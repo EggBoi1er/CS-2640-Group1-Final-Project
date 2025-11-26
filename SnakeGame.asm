@@ -10,6 +10,11 @@ yPos: .word 50
 xSpeed: .word 0
 ySpeed: .word 0 
 tail: .word 7624
+#starting apple position
+xApple: .word 32
+yApple: .word 16
+xConvert: .word 64 # num of tiles per row
+yConvert: .word 4 # num of bytes per pixel
 
 .text
 main:
@@ -69,7 +74,41 @@ updateSnakeHeadPosition:
 
 
 # creating the apple
-
+drawApple:
+	#set up stack
+	addiu $sp, $sp, -24
+	sw $fp, 0($sp)
+	sw $ra, 4($sp)
+	addiu $fp, $sp, 20
+	
+	#get apple's x and y
+	lw $t0, xApple
+	lw $t1, yApple
+	
+	#turn coordinate into a tile number
+	lw $t2, xConvert
+	mult $t1, $t2
+	mflo $t3
+	add $t3, $t3, $t0
+	
+	#turn tile number into byte address
+	lw $t2, yConvert
+	mult $t3, $t2
+	mflo $t0
+	
+	#go to address in framebuffer
+	la $t1, frameBuffer
+	add $t0, $t1, $t0
+	
+	#create a red pixel for the apple
+	li $t4, 0x00ff0000
+	sw $t4, 0($t0)
+	
+	#restoring the stack
+	lw $ra, 4($sp)
+	lw $fp, 0($sp)
+	addiu $sp, $sp, 24
+	jr $ra
 
 
 
