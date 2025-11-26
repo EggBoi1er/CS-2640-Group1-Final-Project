@@ -67,3 +67,12 @@ updateSnakeHeadPosition:
 	addiu $sp, $sp, 24
 	jr $ra
 
+
+# creating the apple
+
+
+
+
+
+
+
