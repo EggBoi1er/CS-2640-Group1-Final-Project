@@ -32,14 +32,39 @@ bg_loop:
 	li $t1, 64
 	li $t2, 0x00000000
 
-drawBorderTop:
+border_top:
+	sw $t2, 0($t0)
+	addi $t0, $t0, 4
+	addi $t1, $t1, -1
+	bnez $t1, border_top
 
-drawBorderBot:
+	la $t0, frameBuffer
+	li $t1, 32
 
-drawBorderLeft:
+border_bottom:
+	sw $t2, 0($t0)
+	addi $t0, $t0, 4
+	addi $t1, $t1, -1
+	bnez $t1, border_bottom
 
-drawBorderRight:
+	la $t0, frameBuffer
+	li $t1, 32
 
+border_left:
+	sw $t2, 0($t0)
+	addi $t0, $t0, 256
+	addi $t1, $t1, -1
+	bnez $t1, border_left
+
+	la $t0, frameBuffer
+	addi $t0, $t0, 252
+	li $t1, 32
+
+border_right:
+	sw $t2, 0($t0)
+	addi $t0, $t0, 256
+	addi $t1, $t1, -1
+	bnez $t1, border_right
 
 
 
