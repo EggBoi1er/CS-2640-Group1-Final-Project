@@ -243,18 +243,18 @@ setSpeedRight:
 	sw $t6, ySpeed
 
 exitSpeedSet:
-	li $t2, 0x00ff0000
+	li $t2, 0x00ff0000 # apple collision detection
 	bne $t2, $t4, headNotApple
 
-	jal newAppleLocation
+	jal newAppleLocation # create new apple
 	jal drawApple
 	j exitUpdateSnake
 
 headNotApple:
-	li $t2, 0xffffff
+	li $t2, 0xffffff # body collision detection
 	beq $t2, $t4, mapLimiter
 
-	li $v0, 10
+	li $v0, 10 # exit the game if body collision happens
 	syscall
 
 mapLimiter:
@@ -277,7 +277,7 @@ mapLimiter:
 	lw $t5, snakeRight
 	beq $t5, $t4, setNextTailRight
 
-setNextTailUp:
+setNextTailUp: # wall collisions
 	addi $t0, $t0, -256
 	blt $t0, 0, gameOver   # tail went before start of buffer
 	bge $t0, 131072, gameOver  # tail went past end of buffer
