@@ -173,17 +173,128 @@ makeMove:
 	# loop
 	j    gameUpdateLoop
 
+#update snake length
+updateSnake:
+	addiu $sp, $sp, -24
+	sw $fp, 0($sp)
+	sw $ra, 4($sp)
+	addiu $fp, $sp, 20
 
+	lw $t0, xPos
+	lw $t1, yPos
+	lw $t2, xConvert
+	mult $t1, $t2
+	mflo $t3
+	add $t3, $t3, $t0
+	lw $t2, yConvert
+	mult $t3, $t2
+	mflo $t0
 
+	la $t1, frameBuffer
+	add $t0, $t1, $t0
+	lw $t4, 0($t0)
+	sw $a0, 0($t0)
 
+	lw $t2, snakeUp
+	beq $a0, $t2, setSpeedUp
 
+	lw $t2, snakeDown
+	beq $a0, $t2, setSpeedDown
 
+	lw $t2, snakeLeft
+	beq $a0, $t2, setSpeedLeft
 
-# update snake length here delete lines 177 to 185 and then upload
+	lw $t2, snakeRight
+	beq $a0, $t2, setSpeedRight
 
+setSpeedUp:
+	li $t5, 0
+	li $t6, -1
+	sw $t5, xSpeed
+	sw $t6, ySpeed
+	j exitSpeedSet
 
+setSpeedDown:
+	li $t5, 0
+	li $t6, 1
+	sw $t5, xSpeed
+	sw $t6, ySpeed
+	j exitSpeedSet
 
+setSpeedLeft:
+	li $t5, -1
+	li $t6, 0
+	sw $t5, xSpeed
+	sw $t6, ySpeed
+	j exitSpeedSet
 
+setSpeedRight:
+	li $t5, 1
+	li $t6, 0
+	sw $t5, xSpeed
+	sw $t6, ySpeed
+
+exitSpeedSet:
+	li $t2, 0x00ff0000
+	bne $t2, $t4, headNotApple
+
+	jal newAppleLocation
+	jal drawApple
+	j exitUpdateSnake
+
+headNotApple:
+	li $t2, 0xffffff
+	beq $t2, $t4, mapLimiter
+
+	li $v0, 10
+	syscall
+
+mapLimiter:
+	lw $t0, tail
+	la $t1, frameBuffer
+	add $t2, $t1, $t0
+	li $t3, 0xffffff
+	lw $t4, 0($t2)
+	sw $t3, 0($t2)
+
+	lw $t5, snakeUp
+	beq $t5, $t4, setNextTailUp
+
+	lw $t5, snakeDown
+	beq $t5, $t4, setNextTailDown
+
+	lw $t5, snakeLeft
+	beq $t5, $t4, setNextTailLeft
+
+	lw $t5, snakeRight
+	beq $t5, $t4, setNextTailRight
+
+setNextTailUp:
+	addi $t0, $t0, -256
+	blt $t0, 0, gameOver   # tail went before start of buffer
+	bge $t0, 131072, gameOver  # tail went past end of buffer
+	sw $t0, tail
+	j exitUpdateSnake
+
+setNextTailDown:
+	addi $t0, $t0, 256
+	sw $t0, tail
+	j exitUpdateSnake
+
+setNextTailLeft:
+	addi $t0, $t0, -4
+	sw $t0, tail
+	j exitUpdateSnake
+
+setNextTailRight:
+	addi $t0, $t0, 4
+	sw $t0, tail
+
+exitUpdateSnake:
+	lw $ra, 4($sp)
+	lw $fp, 0($sp)
+	addiu $sp, $sp, 24
+	jr $ra
 
 # updating the snakeHeadPosition
 # use addiu to make sure theres no overflow
@@ -258,7 +369,7 @@ newAppleLocation:
     sw $ra, 4($sp)
     addiu $fp, $sp, 20
 
-	#random location for apple generation
+#random location for apple generation
 randomGenerator:
     li $v0, 42
     li $a1, 63
