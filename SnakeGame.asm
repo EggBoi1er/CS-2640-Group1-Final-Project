@@ -415,7 +415,7 @@ randomGenerator:
  	jr $ra
 
 frame_delay:
-	li $t0, 50000 # adjust this number to change speed
+	li $t0, 20000 # adjust this number to change speed
 delay_loop:
 	addi $t0, $t0, -1
 	bgtz $t0, delay_loop
