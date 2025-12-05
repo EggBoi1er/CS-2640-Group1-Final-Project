@@ -16,6 +16,13 @@ yApple: .word 16
 xConvert: .word 64 # num of tiles per row
 yConvert: .word 4 # num of bytes per pixel
 
+# using colors as markers in the framebuffer
+# all just different variations of green but not that different 
+snakeUp: .word 0x0000ff00
+snakeDown: .word 0x0100ff00
+snakeLeft: .word 0x0200ff00
+snakeRight: .word 0x0300ff00
+
 .text
 main:
 	la $t0, frameBuffer #Loads the frame buffer address
@@ -24,9 +31,9 @@ main:
 
 bg_loop:
 	sw $t2, 0($t0)
-	addi, $t0, $t0, 4 #Next spot to fill in the pixels
-	addi, $t1, $t1, -1 #Decrease the number of pixel of needed
-	bnez, $t1, bg_loop #Repeat the pixels until there is no pixels left to fill in the background
+	addi $t0, $t0, 4 #Next spot to fill in the pixels
+	addi $t1, $t1, -1 #Decrease the number of pixel of needed
+	bnez $t1, bg_loop #Repeat the pixels until there is no pixels left to fill in the background
 
 	la $t0, frameBuffer
 	li $t1, 64
@@ -39,7 +46,8 @@ border_top:
 	bnez $t1, border_top
 
 	la $t0, frameBuffer
-	li $t1, 32
+	addi $t0, $t0, 7936
+	li $t1, 64
 
 border_bottom:
 	sw $t2, 0($t0)
