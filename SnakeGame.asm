@@ -141,6 +141,7 @@ newAppleLocation:
     sw $ra, 4($sp)
     addiu $fp, $sp, 20
 
+	#random location for apple generation
 randomGenerator:
     li $v0, 42
     li $a1, 63
