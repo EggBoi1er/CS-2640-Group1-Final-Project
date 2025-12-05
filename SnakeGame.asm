@@ -178,6 +178,8 @@ makeMove:
 	jal updateSnake
 	jal updateSnakeHeadPosition
 
+	jal frame_delay
+	
 	# loop
 	j gameUpdateLoop
 
@@ -372,45 +374,53 @@ drawApple:
 	jr $ra
 
 newAppleLocation:
-    addiu $sp, $sp, -24
-    sw $fp, 0($sp)
-    sw $ra, 4($sp)
-    addiu $fp, $sp, 20
+	addiu $sp, $sp, -24
+	sw $fp, 0($sp)
+	sw $ra, 4($sp)
+	addiu $fp, $sp, 20
 
 #random location for apple generation
 randomGenerator:
-    li $v0, 42
-    li $a1, 63
-    syscall
-    move $t1, $a0
+	li $v0, 42
+	li $a1, 63
+	syscall
+	move $t1, $a0
 
-    li $v0, 42
-    li $a1, 31
-    syscall
-    move $t2, $a0
+	li $v0, 42
+	li $a1, 31
+	syscall
+	move $t2, $a0
 
-    lw $t3, xConvert
-    mult $t2, $t3
-    mflo $t4
-    add $t4, $t4, $t1
-    lw $t3, yConvert
-    mult $t4, $t3
-    mflo $t4
+	lw $t3, xConvert
+	mult $t2, $t3
+	mflo $t4
+	add $t4, $t4, $t1
+	lw $t3, yConvert
+	mult $t4, $t3
+	mflo $t4
 
-    la $t0, frameBuffer
-    add $t0, $t0, $t4
-    lw $t5, 0($t0)
+	la $t0, frameBuffer
+	add $t0, $t0, $t4
+	lw $t5, 0($t0)
 
-    li $t6, 0xffffff
-    bne $t5, $t6, randomGenerator
+	li $t6, 0xffffff
+	bne $t5, $t6, randomGenerator
 
-    sw $t1, xApple
-    sw $t2, yApple
+	sw $t1, xApple
+	sw $t2, yApple
 
-    lw $ra, 4($sp)
-    lw $fp, 0($sp)
-    addiu $sp, $sp, 24
-    jr $ra
+	lw $ra, 4($sp)
+	lw $fp, 0($sp)
+	addiu $sp, $sp, 24
+ 	jr $ra
+
+frame_delay:
+	li $t0, 50000 # adjust this number to change speed
+delay_loop:
+	addi $t0, $t0, -1
+	bgtz $t0, delay_loop
+	jr $ra
+
 
 gameOver:
     # exit 
