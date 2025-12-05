@@ -5,7 +5,7 @@
 .data
 frameBuffer: .space 131072 # 512 by 256 pixels
 xPos: .word 50
-yPos: .word 50 
+yPos: .word 27 
 # snake speed
 xSpeed: .word 0
 ySpeed: .word 0 
