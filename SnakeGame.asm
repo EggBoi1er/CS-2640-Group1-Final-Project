@@ -66,6 +66,123 @@ border_right:
 	addi $t1, $t1, -1
 	bnez $t1, border_right
 
+	jal drawApple 
+
+
+
+
+
+
+
+
+
+
+
+
+# movement of the snake
+gameUpdateLoop:
+	# read key and frame delay
+	lw   $t3, 0xffff0004
+	li   $v0, 32
+	li   $a0, 66
+	syscall
+
+	# load current speed for opposite-direction checks
+	lw   $t9, xSpeed # current x speed (1,0,-1)
+	lw   $t8, ySpeed # current y speed (1,0,-1)
+
+	# if no key is pressed keep current direction 
+	li   $t7, 0 # t7 will hold chosen direction color word, 0 = use current direction
+
+	# map key to a direction color in $t7 (but first check for opposite)
+	beq  $t3, 100, goRight # 'd'
+	beq  $t3, 97,  goLeft # 'a'
+	beq  $t3, 119, goUp # 'w'
+	beq  $t3, 115, goDown # 's'
+	beq  $t3, 0, naKey
+	j    usingMoves
+
+goRight:
+	# if currently moving left (xSpeed == -1) => ignore request (leave t7=0)
+	li   $t0, -1
+	beq  $t9, $t0, usingMoves
+	lw   $t7, snakeRight
+	j    usingMoves
+
+goLeft:
+	# if currently moving right (xSpeed == 1) => ignore request
+	li   $t0, 1
+	beq  $t9, $t0, usingMoves
+	lw   $t7, snakeLeft
+	j    usingMoves
+
+goUp:
+	# if currently moving down (ySpeed == 1) => ignore request
+	li   $t0, 1
+	beq  $t8, $t0, usingMoves
+	lw   $t7, snakeUp
+	j    usingMoves
+
+goDown:
+	# if currently moving up (ySpeed == -1) => ignore request
+	li   $t0, -1
+	beq  $t8, $t0, usingMoves
+	lw   $t7, snakeDown
+	j    usingMoves
+
+naKey:
+	# no key pressed: leave $t7 = 0 aka "use current direction"
+	# fall through
+
+usingMoves:
+	# If $t7 == 0, set $a0 to the current snake color (based on xSpeed/ySpeed),
+	# otherwise set $a0 = $t7 (requested color)
+	beq  $t7, $zero, currentDirection
+	move $a0, $t7
+	j    makeMove
+
+currentDirection:
+	# choose color based on current speed
+	li   $t0, 1
+	beq  $t9, $t0, currentlyRight
+	li   $t0, -1
+	beq  $t9, $t0, currentlyLeft
+	li   $t0, 1
+	beq  $t8, $t0, currentlyDown
+	li   $t0, -1
+	beq  $t8, $t0, currentlyUp
+	# default: if velocities are zero, use up
+currentlyUp:
+	lw   $a0, snakeUp
+	j    makeMove
+currentlyDown:
+	lw   $a0, snakeDown
+	j    makeMove
+currentlyLeft:
+	lw   $a0, snakeLeft
+	j    makeMove
+currentlyRight:
+	lw   $a0, snakeRight
+	j    makeMove
+
+makeMove:
+	# perform a single movement update 
+	jal  updateSnake
+	jal  updateSnakeHeadPosition
+
+	# loop
+	j    gameUpdateLoop
+
+
+
+
+
+
+
+# update snake length here delete lines 177 to 185 and then upload
+
+
+
 
 
 # updating the snakeHeadPosition
