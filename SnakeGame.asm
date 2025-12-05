@@ -135,6 +135,51 @@ drawApple:
 	addiu $sp, $sp, 24
 	jr $ra
 
+newAppleLocation:
+    addiu $sp, $sp, -24
+    sw $fp, 0($sp)
+    sw $ra, 4($sp)
+    addiu $fp, $sp, 20
+
+randomGenerator:
+    li $v0, 42
+    li $a1, 63
+    syscall
+    move $t1, $a0
+
+    li $v0, 42
+    li $a1, 31
+    syscall
+    move $t2, $a0
+
+    lw $t3, xConvert
+    mult $t2, $t3
+    mflo $t4
+    add $t4, $t4, $t1
+    lw $t3, yConvert
+    mult $t4, $t3
+    mflo $t4
+
+    la $t0, frameBuffer
+    add $t0, $t0, $t4
+    lw $t5, 0($t0)
+
+    li $t6, 0xffffff
+    bne $t5, $t6, randomGenerator
+
+    sw $t1, xApple
+    sw $t2, yApple
+
+    lw $ra, 4($sp)
+    lw $fp, 0($sp)
+    addiu $sp, $sp, 24
+    jr $ra
+
+gameOver:
+    # exit 
+    li $v0, 10
+    syscall
+
 
 
 
