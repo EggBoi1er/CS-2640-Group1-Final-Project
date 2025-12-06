@@ -35,57 +35,57 @@ bg_loop:
 	addi $t1, $t1, -1 #Decrease the number of pixel of needed
 	bnez $t1, bg_loop #Repeat the pixels until there is no pixels left to fill in the background
 
-	la $t0, frameBuffer
-	li $t1, 64
-	li $t2, 0x00000000
+# $t0 = current pixel address (frameBuffer pointer)
+# $t1 = loop counter (how many pixels to draw)
+# $t2 = color address (0x00000000 = Black), acts as the wall color
+
+# -----Top Border-----
+	la $t0, frameBuffer	# load start of screen (top -left)
+	li $t1, 64	# loop 64 times (width of screen)
+	li $t2, 0x00000000	# Set wall color to Black
 
 border_top:
-	sw $t2, 0($t0)
-	addi $t0, $t0, 4
-	addi $t1, $t1, -1
-	bnez $t1, border_top
+	sw $t2, 0($t0)	# color the current pixel black
+	addi $t0, $t0, 4	# Move Right 1 pixel ( 4 bytes)
+	addi $t1, $t1, -1	# Decrement counter ($t1)
+	bnez $t1, border_top	# Continue until top row is done, branch if not equal to zero
 
-	la $t0, frameBuffer
-	addi $t0, $t0, 7936
-	li $t1, 64
+#-----Bottom Border-----
+	la $t0, frameBuffer	# Reset to top left
+	addi $t0, $t0, 7936	# Move to start of the last row; 
+						#31st row * 256 bytes peer row = 7936
+	li $t1, 64	# lop 64 times ( width of screen)
 
+# Similiar steps like border_top
 border_bottom:
-	sw $t2, 0($t0)
-	addi $t0, $t0, 4
-	addi $t1, $t1, -1
-	bnez $t1, border_bottom
+	sw $t2, 0($t0)	# color current pixel black
+	addi $t0, $t0, 4	# move Right 1 pixel
+	addi $t1, $t1, -1	# decrement counter
+	bnez $t1, border_bottom	# continue until bottome row is done
 
-	la $t0, frameBuffer
-	li $t1, 32
+#-----Left Border-----
+	la $t0, frameBuffer	#reset
+	li $t1, 32	# loop 32 times, height
 
 border_left:
-	sw $t2, 0($t0)
-	addi $t0, $t0, 256
-	addi $t1, $t1, -1
-	bnez $t1, border_left
+	sw $t2, 0($t0)	# color curent pixel black
+	addi $t0, $t0, 256	# move down 1 row
+	addi $t1, $t1, -1	# decrement counter
+	bnez $t1, border_left	# continue until left column is done
 
-	la $t0, frameBuffer
-	addi $t0, $t0, 252
-	li $t1, 32
+#-----Right Border-----
+	la $t0, frameBuffer	#Reset to top-left
+	addi $t0, $t0, 252	# Move to last pixel of first row
+						# 63rd pixel x 4 bytes = 252
+	li $t1, 32	# loop 32 times, height of screen
 
 border_right:
-	sw $t2, 0($t0)
-	addi $t0, $t0, 256
-	addi $t1, $t1, -1
-	bnez $t1, border_right
+	sw $t2, 0($t0)	# Color current pixel black
+	addi $t0, $t0, 256	# Move Down 1 row
+	addi $t1, $t1, -1	#decrement counter
+	bnez $t1, border_right	#continue until right column is done
 
-	jal drawApple 
-
-
-
-
-
-
-
-
-
-
-
+	jal drawApple	# walls (borders) are done, now read to spawn apple
 
 # movement of the snake
 gameUpdateLoop:
